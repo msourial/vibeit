@@ -1,12 +1,11 @@
 "use client";
 
-import { NextPage } from "next";
 import { useState } from "react";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { parseEther } from "viem";
 import Link from "next/link";
+import { parseEther } from "viem";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
-const CreateEventPage: NextPage = () => {
+const CreateEventPage = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -21,7 +20,7 @@ const CreateEventPage: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!name.trim()) {
       alert("Please enter an event name");
@@ -70,7 +69,7 @@ const CreateEventPage: NextPage = () => {
       });
 
       console.log("Event creation result:", result);
-      
+
       // Reset form on success
       setName("");
       setDescription("");
@@ -78,14 +77,14 @@ const CreateEventPage: NextPage = () => {
       setAddress("");
       setTicketPrice("");
       setTotalTickets("");
-      
+
       alert("Event created successfully!");
     } catch (error: any) {
       console.error("Error creating event:", error);
-      
+
       // Better error handling
       let errorMessage = "Failed to create event. Please try again.";
-      
+
       if (error?.message) {
         if (error.message.includes("User rejected")) {
           errorMessage = "Transaction was rejected by user.";
@@ -97,7 +96,7 @@ const CreateEventPage: NextPage = () => {
           errorMessage = `Error: ${error.message}`;
         }
       }
-      
+
       alert(errorMessage);
     } finally {
       setIsLoading(false);
@@ -217,8 +216,8 @@ const CreateEventPage: NextPage = () => {
             </div>
 
             <div className="pt-6">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >

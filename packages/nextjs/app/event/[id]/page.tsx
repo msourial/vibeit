@@ -1,10 +1,9 @@
 "use client";
 
-import { NextPage } from "next";
+import { use, useState } from "react";
 import Link from "next/link";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { useState, use } from "react";
 import { formatEther } from "viem";
+import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type Props = {
   params: Promise<{
@@ -12,13 +11,12 @@ type Props = {
   }>;
 };
 
-
 export default function EventPage({ params }: Props) {
   const { id } = use(params);
-  
+
   const { data: event } = useScaffoldReadContract({
     contractName: "EventManager",
-    functionName: "getEvent",
+    functionName: "events",
     args: [BigInt(id)],
   });
 
@@ -34,7 +32,7 @@ export default function EventPage({ params }: Props) {
       await buyTicket({
         functionName: "buyTicket",
         args: [BigInt(id)],
-        value: event?.[4] || 0n, // ticket price
+        value: ticketPrice, // ticket price
       });
       alert("Ticket purchased successfully! NFT minted to your wallet.");
     } catch (error) {
@@ -45,18 +43,22 @@ export default function EventPage({ params }: Props) {
     }
   };
 
-  if (!event) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading event...</p>
-        </div>
-      </div>
-    );
-  }
+  // Mock event data for demo purposes since no events exist yet
+  const mockEvent = [
+    BigInt(Number(id)), // event ID
+    `Demo Event ${id}`, // name
+    "This is a demo event for the VibeIt platform. Experience blockchain-powered event ticketing with NFT tickets!", // description
+    BigInt(Math.floor(Date.now() / 1000) + 86400), // date (tomorrow)
+    BigInt("100000000000000000"), // price (0.1 XDC)
+    BigInt(100), // total tickets
+    BigInt(Math.floor(Math.random() * 30)), // sold tickets (random)
+    "0x0000000000000000000000000000000000000000", // organizer
+  ] as const;
 
-  const [, name, description, date, ticketPrice, totalTickets, soldTickets] = event;
+  // Use mock data if no real event exists
+  const displayEvent = event && event[1] ? event : mockEvent;
+
+  const [, name, description, date, ticketPrice, totalTickets, soldTickets] = displayEvent;
   const ticketsRemaining = Number(totalTickets) - Number(soldTickets);
   const isSoldOut = soldTickets >= totalTickets;
 
@@ -83,7 +85,13 @@ export default function EventPage({ params }: Props) {
               <div className="lg:col-span-2">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">{name}</h1>
                 <p className="text-lg text-gray-600 mb-6 leading-relaxed">{description}</p>
-                
+
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-lg font-semibold">
+                    Tickets: {Number(soldTickets)}/{Number(totalTickets)}
+                  </span>
+                </div>
+
                 <div className="space-y-4">
                   <div className="flex items-center text-gray-700">
                     <span className="text-2xl mr-3">📅</span>
@@ -92,7 +100,7 @@ export default function EventPage({ params }: Props) {
                       <p className="text-gray-600">{new Date(Number(date) * 1000).toLocaleString()}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-700">
                     <span className="text-2xl mr-3">🎫</span>
                     <div>
@@ -110,33 +118,33 @@ export default function EventPage({ params }: Props) {
                 <div className="bg-gray-50 rounded-xl p-6 sticky top-8">
                   <div className="text-center mb-6">
                     <p className="text-sm text-gray-600 mb-2">Ticket Price</p>
-                    <p className="text-3xl font-bold text-purple-600">
-                      {formatEther(ticketPrice)} XDC
-                    </p>
+                    <p className="text-3xl font-bold text-purple-600">{formatEther(ticketPrice)} XDC</p>
                   </div>
 
                   {/* Progress Bar */}
                   <div className="mb-6">
                     <div className="flex justify-between text-sm text-gray-600 mb-2">
                       <span>Sold</span>
-                      <span>{Number(soldTickets)} / {Number(totalTickets)}</span>
+                      <span>
+                        {Number(soldTickets)} / {Number(totalTickets)}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-purple-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${(Number(soldTickets) / Number(totalTickets)) * 100}%` }}
                       ></div>
                     </div>
                   </div>
 
-                  <button 
+                  <button
                     onClick={handleBuyTicket}
                     disabled={isSoldOut || isLoading}
                     className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
-                      isSoldOut 
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                        : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl'
-                    } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      isSoldOut
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl"
+                    } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     {isLoading ? "Processing..." : isSoldOut ? "Sold Out" : "Buy Ticket"}
                   </button>
@@ -154,5 +162,4 @@ export default function EventPage({ params }: Props) {
       </div>
     </div>
   );
-};
-
+}
