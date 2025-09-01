@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
@@ -20,11 +20,10 @@ const Home: NextPage = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
 
-  const handleEventSelect = (eventId: number | null) => {
+  const handleEventSelect = useCallback((eventId: number | null) => {
     console.log("handleEventSelect called with:", eventId);
-    console.log("Current selectedEvent:", selectedEvent);
     setSelectedEvent(eventId);
-  };
+  }, []);
 
   // Debug: Log selectedEvent changes
   console.log("Current selectedEvent state:", selectedEvent);
@@ -432,13 +431,7 @@ const InteractiveMap = ({
 
   return (
     <div className="relative h-96 bg-white border border-gray-200 overflow-hidden">
-      <LeafletMap
-        center={mapCenter}
-        events={events}
-        userLocation={userLocation}
-        selectedEvent={selectedEvent}
-        onEventSelect={onEventSelect}
-      />
+      <LeafletMap center={mapCenter} events={events} userLocation={userLocation} onEventSelect={onEventSelect} />
 
       {/* Event Popup */}
       {selectedEvent !== null && <EventPopup eventId={selectedEvent} onClose={() => onEventSelect(null)} />}
@@ -460,64 +453,68 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
   console.log("Event data:", event);
 
   // Use the same event locations from InteractiveMap component
-  const eventLocationsForPopup = [
-    {
-      lat: 40.7128,
-      lng: -74.006,
-      address: "New York, NY",
-      name: "Tech Innovation Conference 2025",
-      description:
-        "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
-      date: "2025-01-10",
-      price: "0.0",
-    },
-    {
-      lat: 34.0522,
-      lng: -118.2437,
-      address: "Los Angeles, CA",
-      name: "Summer Music Festival",
-      description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
-      date: "2025-01-15",
-      price: "0.0",
-    },
-    {
-      lat: 41.8781,
-      lng: -87.6298,
-      address: "Chicago, IL",
-      name: "Web Development Workshop",
-      description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
-      date: "2025-01-18",
-      price: "0.0",
-    },
-    {
-      lat: 29.7604,
-      lng: -95.3698,
-      address: "Houston, TX",
-      name: "Startup Networking Meetup",
-      description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
-      date: "2025-01-22",
-      price: "0.0",
-    },
-    {
-      lat: 39.9526,
-      lng: -75.1652,
-      address: "Philadelphia, PA",
-      name: "Jazz & Blues Concert",
-      description:
-        "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
-      date: "2025-01-25",
-      price: "0.0",
-    },
-    {
-      lat: 37.7749,
-      lng: -122.4194,
-      address: "San Francisco, CA",
-      name: "Digital Marketing Workshop",
-      description: "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
-      date: "2025-01-30",
-      price: "0.0",
-    },
-  ];
+  const eventLocationsForPopup = useMemo(
+    () => [
+      {
+        lat: 40.7128,
+        lng: -74.006,
+        address: "New York, NY",
+        name: "Tech Innovation Conference 2025",
+        description:
+          "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
+        date: "2025-01-10",
+        price: "0.0",
+      },
+      {
+        lat: 34.0522,
+        lng: -118.2437,
+        address: "Los Angeles, CA",
+        name: "Summer Music Festival",
+        description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
+        date: "2025-01-15",
+        price: "0.0",
+      },
+      {
+        lat: 41.8781,
+        lng: -87.6298,
+        address: "Chicago, IL",
+        name: "Web Development Workshop",
+        description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
+        date: "2025-01-18",
+        price: "0.0",
+      },
+      {
+        lat: 29.7604,
+        lng: -95.3698,
+        address: "Houston, TX",
+        name: "Startup Networking Meetup",
+        description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
+        date: "2025-01-22",
+        price: "0.0",
+      },
+      {
+        lat: 39.9526,
+        lng: -75.1652,
+        address: "Philadelphia, PA",
+        name: "Jazz & Blues Concert",
+        description:
+          "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
+        date: "2025-01-25",
+        price: "0.0",
+      },
+      {
+        lat: 37.7749,
+        lng: -122.4194,
+        address: "San Francisco, CA",
+        name: "Digital Marketing Workshop",
+        description:
+          "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
+        date: "2025-01-30",
+        price: "0.0",
+      },
+    ],
+    [],
+  );
   const location = eventLocationsForPopup[eventId % eventLocationsForPopup.length];
 
   // Use mock data for all events
@@ -577,179 +574,103 @@ type LeafletMapProps = {
   center: { lat: number; lng: number };
   events: number[];
   userLocation?: { lat: number; lng: number } | null;
-  selectedEvent: number | null;
   onEventSelect: (id: number | null) => void;
 };
 
-const LeafletMap = ({ center, events, userLocation, selectedEvent, onEventSelect }: LeafletMapProps) => {
+const LeafletMap = ({ center, events, userLocation, onEventSelect }: LeafletMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
 
-  const eventLocations = [
-    {
-      lat: 40.7128,
-      lng: -74.006,
-      address: "New York, NY",
-      name: "Tech Innovation Conference 2025",
-      description:
-        "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
-      date: "2025-01-10",
-      price: "0.0",
-    },
-    {
-      lat: 34.0522,
-      lng: -118.2437,
-      address: "Los Angeles, CA",
-      name: "Summer Music Festival",
-      description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
-      date: "2025-01-15",
-      price: "0.0",
-    },
-    {
-      lat: 41.8781,
-      lng: -87.6298,
-      address: "Chicago, IL",
-      name: "Web Development Workshop",
-      description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
-      date: "2025-01-18",
-      price: "0.0",
-    },
-    {
-      lat: 29.7604,
-      lng: -95.3698,
-      address: "Houston, TX",
-      name: "Startup Networking Meetup",
-      description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
-      date: "2025-01-22",
-      price: "0.0",
-    },
-    {
-      lat: 39.9526,
-      lng: -75.1652,
-      address: "Philadelphia, PA",
-      name: "Jazz & Blues Concert",
-      description:
-        "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
-      date: "2025-01-25",
-      price: "0.0",
-    },
-    {
-      lat: 37.7749,
-      lng: -122.4194,
-      address: "San Francisco, CA",
-      name: "Digital Marketing Workshop",
-      description: "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
-      date: "2025-01-30",
-      price: "0.0",
-    },
-  ];
+  const eventLocations = useMemo(
+    () => [
+      {
+        lat: 40.7128,
+        lng: -74.006,
+        address: "New York, NY",
+        name: "Tech Innovation Conference 2025",
+        description:
+          "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
+        date: "2025-01-10",
+        price: "0.0",
+      },
+      {
+        lat: 34.0522,
+        lng: -118.2437,
+        address: "Los Angeles, CA",
+        name: "Summer Music Festival",
+        description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
+        date: "2025-01-15",
+        price: "0.0",
+      },
+      {
+        lat: 41.8781,
+        lng: -87.6298,
+        address: "Chicago, IL",
+        name: "Web Development Workshop",
+        description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
+        date: "2025-01-18",
+        price: "0.0",
+      },
+      {
+        lat: 29.7604,
+        lng: -95.3698,
+        address: "Houston, TX",
+        name: "Startup Networking Meetup",
+        description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
+        date: "2025-01-22",
+        price: "0.0",
+      },
+      {
+        lat: 39.9526,
+        lng: -75.1652,
+        address: "Philadelphia, PA",
+        name: "Jazz & Blues Concert",
+        description:
+          "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
+        date: "2025-01-25",
+        price: "0.0",
+      },
+      {
+        lat: 37.7749,
+        lng: -122.4194,
+        address: "San Francisco, CA",
+        name: "Digital Marketing Workshop",
+        description:
+          "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
+        date: "2025-01-30",
+        price: "0.0",
+      },
+    ],
+    [],
+  );
 
   useEffect(() => {
-    // Load Leaflet dynamically
-    const loadLeaflet = async () => {
-      if (typeof window !== "undefined" && !window.L) {
-        // Load Leaflet CSS
+    const initializeMap = () => {
+      if (mapRef.current && !mapInstanceRef.current) {
+        const map = window.L.map(mapRef.current).setView([center.lat, center.lng], 10);
+        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+        mapInstanceRef.current = map;
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      if (!window.L) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
         document.head.appendChild(link);
 
-        // Load Leaflet JS
         const script = document.createElement("script");
         script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
         script.onload = initializeMap;
         document.head.appendChild(script);
-      } else if (window.L && mapRef.current && !mapInstanceRef.current) {
+      } else {
         initializeMap();
       }
-    };
-
-    const initializeMap = () => {
-      if (!mapRef.current || mapInstanceRef.current) return;
-
-      // Initialize map
-      const map = window.L.map(mapRef.current).setView([center.lat, center.lng], 10);
-
-      // Add OpenStreetMap tiles
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
-
-      mapInstanceRef.current = map;
-      addEventMarkers();
-    };
-
-    const addEventMarkers = () => {
-      if (!mapInstanceRef.current) return;
-
-      // Clear existing markers
-      markersRef.current.forEach(marker => {
-        mapInstanceRef.current.removeLayer(marker);
-      });
-      markersRef.current = [];
-
-      // Add event markers
-      events.forEach(eventId => {
-        const location = eventLocations[eventId % eventLocations.length];
-
-        const customIcon = window.L.divIcon({
-          html: `<div style="
-            width: 32px; 
-            height: 32px; 
-            background: linear-gradient(45deg, #8b5cf6, #3b82f6); 
-            border-radius: 50%; 
-            border: 3px solid white; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: bold; 
-            font-size: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-          ">${eventId + 1}</div>`,
-          className: "custom-div-icon",
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
-        });
-
-        const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
-          .addTo(mapInstanceRef.current)
-          .on("click", (_e: any) => {
-            _e.originalEvent?.stopPropagation();
-            console.log("Marker clicked, eventId:", eventId);
-            onEventSelect(eventId);
-          });
-
-        markersRef.current.push(marker);
-      });
-
-      // Add user location marker if available
-      if (userLocation) {
-        const userIcon = window.L.divIcon({
-          html: `<div style="
-            width: 16px; 
-            height: 16px; 
-            background: #3b82f6; 
-            border-radius: 50%; 
-            border: 2px solid white; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            animation: pulse 2s infinite;
-          "></div>`,
-          className: "user-location-icon",
-          iconSize: [16, 16],
-          iconAnchor: [8, 8],
-        });
-
-        const userMarker = window.L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(
-          mapInstanceRef.current,
-        );
-
-        markersRef.current.push(userMarker);
-      }
-    };
-
-    loadLeaflet();
+    }
 
     return () => {
       if (mapInstanceRef.current) {
@@ -757,9 +678,7 @@ const LeafletMap = ({ center, events, userLocation, selectedEvent, onEventSelect
         mapInstanceRef.current = null;
       }
     };
-  }, []);
-
-  // Update map center when center prop changes
+  }, [center.lat, center.lng]);
 
   useEffect(() => {
     if (mapInstanceRef.current) {
@@ -768,12 +687,45 @@ const LeafletMap = ({ center, events, userLocation, selectedEvent, onEventSelect
   }, [center]);
 
   useEffect(() => {
-    if (mapInstanceRef.current) {
-      // The logic to add/update markers is already in the initialization useEffect,
-      // which depends on `events`. We might need a more sophisticated update logic
-      // if events can change frequently without a full re-render, but for now this is fine.
+    if (!mapInstanceRef.current) return;
+
+    markersRef.current.forEach(marker => mapInstanceRef.current.removeLayer(marker));
+    markersRef.current = [];
+
+    events.forEach(eventId => {
+      const location = eventLocations[eventId % eventLocations.length];
+      const customIcon = window.L.divIcon({
+        html: `<div style="width: 32px; height: 32px; background: linear-gradient(45deg, #8b5cf6, #3b82f6); border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">${
+          eventId + 1
+        }</div>`,
+        className: "custom-div-icon",
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+
+      const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
+        .addTo(mapInstanceRef.current)
+        .on("click", (e: { originalEvent: { stopPropagation: () => void } }) => {
+          e.originalEvent?.stopPropagation();
+          onEventSelect(eventId);
+        });
+
+      markersRef.current.push(marker);
+    });
+
+    if (userLocation) {
+      const userIcon = window.L.divIcon({
+        html: `<div style="width: 16px; height: 16px; background: #3b82f6; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 2s infinite;"></div>`,
+        className: "user-location-icon",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+      });
+      const userMarker = window.L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(
+        mapInstanceRef.current,
+      );
+      markersRef.current.push(userMarker);
     }
-  }, [events, userLocation, selectedEvent, onEventSelect, eventLocations]); // Dependencies for marker updates
+  }, [events, userLocation, onEventSelect, eventLocations]);
 
   return <div ref={mapRef} className="w-full h-full" />;
 };
