@@ -36,7 +36,7 @@ export default function EventPage({ params }: Props) {
       await buyTicket({
         functionName: "buyTicket",
         args: [BigInt(id)],
-        value: event[4], // Use actual contract ticket price
+        value: ticketPrice, // Use ticketPrice from destructured displayEvent
       });
       alert("Ticket purchased successfully! NFT minted to your wallet.");
     } catch (error) {
