@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { formatEther } from "viem";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
 type Props = {
   params: Promise<{
@@ -14,11 +14,7 @@ type Props = {
 export default function EventPage({ params }: Props) {
   const { id } = use(params);
 
-  const { data: event } = useScaffoldReadContract({
-    contractName: "EventManager",
-    functionName: "events",
-    args: [BigInt(id)],
-  });
+  // Remove contract call for demo - using mock data only
 
   const { writeContractAsync: buyTicket } = useScaffoldWriteContract({
     contractName: "EventManager",
@@ -43,20 +39,20 @@ export default function EventPage({ params }: Props) {
     }
   };
 
-  // Mock event data for demo purposes since no events exist yet
+  // Always use mock data for demo - don't wait for contract
   const mockEvent = [
     BigInt(Number(id)), // event ID
-    `Demo Event ${id}`, // name
-    "This is a demo event for the VibeIt platform. Experience blockchain-powered event ticketing with NFT tickets!", // description
+    `XDC Vibe Event ${id}`, // name
+    "Join us for an exciting blockchain event featuring XDC development, NFT ticketing, and networking with fellow developers!", // description
     BigInt(Math.floor(Date.now() / 1000) + 86400), // date (tomorrow)
     BigInt("100000000000000000"), // price (0.1 XDC)
     BigInt(100), // total tickets
-    BigInt(Math.floor(Math.random() * 30)), // sold tickets (random)
+    BigInt(25 + Number(id) * 5), // sold tickets (varies by ID)
     "0x0000000000000000000000000000000000000000", // organizer
   ] as const;
 
-  // Use mock data if no real event exists
-  const displayEvent = event && event[1] ? event : mockEvent;
+  // Always use mock data for immediate display
+  const displayEvent = mockEvent;
 
   const [, name, description, date, ticketPrice, totalTickets, soldTickets] = displayEvent;
   const ticketsRemaining = Number(totalTickets) - Number(soldTickets);
