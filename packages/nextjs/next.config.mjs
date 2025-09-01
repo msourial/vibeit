@@ -6,6 +6,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    unoptimized: true,
+  },
   webpack: config => {
     config.resolve.fallback = { 
       fs: false, 
@@ -24,12 +27,6 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
-  // Disable static optimization for pages with Web3 components
-  experimental: {
-    esmExternals: false,
-    optimizePackageImports: ['@heroicons/react']
-  },
-  // Add environment variables for build
   env: {
     NEXT_PUBLIC_IGNORE_BUILD_ERROR: "true"
   }

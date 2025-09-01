@@ -6,35 +6,35 @@ import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaf
 import { useState, use } from "react";
 import { formatEther } from "viem";
 
-interface EventPageProps {
+type Props = {
   params: Promise<{
     id: string;
   }>;
-}
+};
 
-const EventPage: NextPage<EventPageProps> = ({ params }) => {
-  const [isLoading, setIsLoading] = useState(false);
 
-  const resolvedParams = use(params);
-  const eventId = BigInt(resolvedParams.id);
-
+export default function EventPage({ params }: Props) {
+  const { id } = use(params);
+  
   const { data: event } = useScaffoldReadContract({
     contractName: "EventManager",
-    functionName: "events",
-    args: [eventId],
+    functionName: "getEvent",
+    args: [BigInt(id)],
   });
 
   const { writeContractAsync: buyTicket } = useScaffoldWriteContract({
     contractName: "EventManager",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleBuyTicket = async () => {
     setIsLoading(true);
     try {
       await buyTicket({
         functionName: "buyTicket",
-        args: [eventId],
-        value: ticketPrice,
+        args: [BigInt(id)],
+        value: event?.[4] || 0n, // ticket price
       });
       alert("Ticket purchased successfully! NFT minted to your wallet.");
     } catch (error) {
@@ -156,4 +156,3 @@ const EventPage: NextPage<EventPageProps> = ({ params }) => {
   );
 };
 
-export default EventPage;
