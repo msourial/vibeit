@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { NextPage } from "next";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -18,6 +19,15 @@ const Home: NextPage = () => {
   const [locationError, setLocationError] = useState("");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+
+  const handleEventSelect = (eventId: number | null) => {
+    console.log("handleEventSelect called with:", eventId);
+    console.log("Current selectedEvent:", selectedEvent);
+    setSelectedEvent(eventId);
+  };
+
+  // Debug: Log selectedEvent changes
+  console.log("Current selectedEvent state:", selectedEvent);
 
   const { data: nextEventId } = useScaffoldReadContract({
     contractName: "EventManager",
@@ -197,7 +207,7 @@ const Home: NextPage = () => {
               searchLocation={searchLocation}
               userLocation={userLocation}
               selectedEvent={selectedEvent}
-              onEventSelect={setSelectedEvent}
+              onEventSelect={handleEventSelect}
             />
           </div>
         </div>
@@ -251,18 +261,69 @@ const EventCard = ({
 
   if (!event) return null;
 
-  const [name, description, date, ticketPrice, maxTickets, ticketsSold] = event;
+  const [, , , ticketPrice, maxTickets, ticketsSold] = event;
 
-  // Mock location data for events (in a real app, this would be stored in the contract or database)
-  const mockEventLocations = [
-    { lat: 40.7128, lng: -74.006, address: "New York, NY" },
-    { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
-    { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" },
-    { lat: 29.7604, lng: -95.3698, address: "Houston, TX" },
-    { lat: 39.9526, lng: -75.1652, address: "Philadelphia, PA" },
+  // Mock location and event data for events (in a real app, this would be stored in the contract or database)
+  const mockEventData = [
+    {
+      lat: 40.7128,
+      lng: -74.006,
+      address: "New York, NY",
+      name: "Tech Innovation Conference 2025",
+      description:
+        "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
+      date: "2025-01-10",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop&auto=format",
+    },
+    {
+      lat: 34.0522,
+      lng: -118.2437,
+      address: "Los Angeles, CA",
+      name: "Summer Music Festival",
+      description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
+      date: "2025-01-15",
+      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop&auto=format",
+    },
+    {
+      lat: 41.8781,
+      lng: -87.6298,
+      address: "Chicago, IL",
+      name: "Web Development Workshop",
+      description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
+      date: "2025-01-18",
+      image: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=400&h=200&fit=crop&auto=format",
+    },
+    {
+      lat: 29.7604,
+      lng: -95.3698,
+      address: "Houston, TX",
+      name: "Startup Networking Meetup",
+      description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
+      date: "2025-01-22",
+      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=200&fit=crop&auto=format",
+    },
+    {
+      lat: 39.9526,
+      lng: -75.1652,
+      address: "Philadelphia, PA",
+      name: "Jazz & Blues Concert",
+      description:
+        "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
+      date: "2025-01-25",
+      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop&auto=format",
+    },
+    {
+      lat: 37.7749,
+      lng: -122.4194,
+      address: "San Francisco, CA",
+      name: "Digital Marketing Workshop",
+      description: "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
+      date: "2025-01-30",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=200&fit=crop&auto=format",
+    },
   ];
 
-  const eventLocation = mockEventLocations[eventId % mockEventLocations.length];
+  const eventData = mockEventData[eventId % mockEventData.length];
 
   // Calculate distance if user location is available
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -277,16 +338,23 @@ const EventCard = ({
   };
 
   const distance = userLocation
-    ? calculateDistance(userLocation.lat, userLocation.lng, eventLocation.lat, eventLocation.lng)
+    ? calculateDistance(userLocation.lat, userLocation.lng, eventData.lat, eventData.lng)
     : null;
 
   return (
     <div className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-      <div className="relative bg-gradient-to-br from-purple-400 to-blue-500 h-48">
+      <div className="relative h-48 overflow-hidden">
+        <Image
+          src={eventData.image}
+          alt={eventData.name}
+          width={400}
+          height={200}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
         <div className="absolute bottom-4 left-4 text-white">
-          <h3 className="text-xl font-bold mb-1">{name}</h3>
-          <p className="text-sm opacity-90">{new Date(Number(date) * 1000).toLocaleDateString()}</p>
+          <h3 className="text-xl font-bold mb-1">{eventData.name}</h3>
+          <p className="text-sm opacity-90">{new Date(eventData.date).toLocaleDateString()}</p>
         </div>
         {distance && (
           <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
@@ -297,10 +365,10 @@ const EventCard = ({
 
       <div className="p-6">
         <div className="flex items-center text-sm text-gray-500 mb-2">
-          <span>📍 {eventLocation.address}</span>
+          <span>📍 {eventData.address}</span>
         </div>
 
-        <p className="text-gray-600 mb-4 line-clamp-2">{description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-2">{eventData.description}</p>
 
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-gray-900">{Number(ticketPrice) / 1e18} XDC</span>
@@ -381,11 +449,15 @@ const InteractiveMap = ({
 // Removed unused EventPin component
 
 const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void }) => {
+  console.log("EventPopup rendering for eventId:", eventId);
+
   const { data: event } = useScaffoldReadContract({
     contractName: "EventManager",
     functionName: "events",
     args: [BigInt(eventId)],
   });
+
+  console.log("Event data:", event);
 
   // Use the same event locations from InteractiveMap component
   const eventLocationsForPopup = [
@@ -393,37 +465,75 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
       lat: 40.7128,
       lng: -74.006,
       address: "New York, NY",
-      name: "XDC Vibe Coding - Free Bootcamp - Live Kick-off & AMA",
+      name: "Tech Innovation Conference 2025",
       description:
-        "Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.",
+        "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
+      date: "2025-01-10",
+      price: "0.0",
+    },
+    {
+      lat: 34.0522,
+      lng: -118.2437,
+      address: "Los Angeles, CA",
+      name: "Summer Music Festival",
+      description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
       date: "2025-01-15",
       price: "0.0",
     },
-    { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
-    { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" },
-    { lat: 29.7604, lng: -95.3698, address: "Houston, TX" },
-    { lat: 39.9526, lng: -75.1652, address: "Philadelphia, PA" },
+    {
+      lat: 41.8781,
+      lng: -87.6298,
+      address: "Chicago, IL",
+      name: "Web Development Workshop",
+      description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
+      date: "2025-01-18",
+      price: "0.0",
+    },
+    {
+      lat: 29.7604,
+      lng: -95.3698,
+      address: "Houston, TX",
+      name: "Startup Networking Meetup",
+      description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
+      date: "2025-01-22",
+      price: "0.0",
+    },
+    {
+      lat: 39.9526,
+      lng: -75.1652,
+      address: "Philadelphia, PA",
+      name: "Jazz & Blues Concert",
+      description:
+        "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
+      date: "2025-01-25",
+      price: "0.0",
+    },
+    {
+      lat: 37.7749,
+      lng: -122.4194,
+      address: "San Francisco, CA",
+      name: "Digital Marketing Workshop",
+      description: "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
+      date: "2025-01-30",
+      price: "0.0",
+    },
   ];
   const location = eventLocationsForPopup[eventId % eventLocationsForPopup.length];
 
-  // Use mock data for first event (NYC XDC event), contract data for others
-  const displayName = eventId === 0 && location.name ? location.name : event ? event[0] : "Loading...";
-  const displayDescription =
-    eventId === 0 && location.description ? location.description : event ? event[1] : "Loading...";
-  const displayDate =
-    eventId === 0 && location.date
-      ? location.date
-      : event
-        ? new Date(Number(event[2]) * 1000).toLocaleDateString()
-        : "";
-  const displayPrice =
-    eventId === 0 && location.price ? location.price : event ? (Number(event[3]) / 1e18).toString() : "0";
+  // Use mock data for all events
+  const displayName = location.name;
+  const displayDescription = location.description;
+  const displayDate = new Date(location.date).toLocaleDateString();
+  const displayPrice = location.price;
 
   if (!event && eventId !== 0) return null;
 
   return (
-    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm border border-gray-100">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm border border-gray-100 m-4"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="flex items-start justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-900 pr-4">{displayName}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
@@ -463,19 +573,15 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
   );
 };
 
-const LeafletMap = ({
-  center,
-  events,
-  userLocation,
-  selectedEvent,
-  onEventSelect,
-}: {
+type LeafletMapProps = {
   center: { lat: number; lng: number };
   events: number[];
   userLocation?: { lat: number; lng: number } | null;
   selectedEvent: number | null;
-  onEventSelect: (eventId: number | null) => void;
-}) => {
+  onEventSelect: (id: number | null) => void;
+};
+
+const LeafletMap = ({ center, events, userLocation, selectedEvent, onEventSelect }: LeafletMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
@@ -485,16 +591,58 @@ const LeafletMap = ({
       lat: 40.7128,
       lng: -74.006,
       address: "New York, NY",
-      name: "XDC Vibe Coding - Free Bootcamp - Live Kick-off & AMA",
+      name: "Tech Innovation Conference 2025",
       description:
-        "Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.",
+        "Join industry leaders discussing AI, blockchain, and the future of technology in this premier conference.",
+      date: "2025-01-10",
+      price: "0.0",
+    },
+    {
+      lat: 34.0522,
+      lng: -118.2437,
+      address: "Los Angeles, CA",
+      name: "Summer Music Festival",
+      description: "Three days of incredible live music featuring top artists across multiple genres and stages.",
       date: "2025-01-15",
       price: "0.0",
     },
-    { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
-    { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" },
-    { lat: 29.7604, lng: -95.3698, address: "Houston, TX" },
-    { lat: 39.9526, lng: -75.1652, address: "Philadelphia, PA" },
+    {
+      lat: 41.8781,
+      lng: -87.6298,
+      address: "Chicago, IL",
+      name: "Web Development Workshop",
+      description: "Hands-on workshop covering modern web development with React, Node.js, and cloud deployment.",
+      date: "2025-01-18",
+      price: "0.0",
+    },
+    {
+      lat: 29.7604,
+      lng: -95.3698,
+      address: "Houston, TX",
+      name: "Startup Networking Meetup",
+      description: "Connect with entrepreneurs, investors, and innovators in Houston's thriving startup ecosystem.",
+      date: "2025-01-22",
+      price: "0.0",
+    },
+    {
+      lat: 39.9526,
+      lng: -75.1652,
+      address: "Philadelphia, PA",
+      name: "Jazz & Blues Concert",
+      description:
+        "An intimate evening of smooth jazz and soulful blues featuring renowned local and international artists.",
+      date: "2025-01-25",
+      price: "0.0",
+    },
+    {
+      lat: 37.7749,
+      lng: -122.4194,
+      address: "San Francisco, CA",
+      name: "Digital Marketing Workshop",
+      description: "Learn cutting-edge digital marketing strategies, SEO techniques, and social media best practices.",
+      date: "2025-01-30",
+      price: "0.0",
+    },
   ];
 
   useEffect(() => {
@@ -565,30 +713,12 @@ const LeafletMap = ({
           iconAnchor: [16, 16],
         });
 
-        const popupContent =
-          eventId === 0
-            ? `<div style="max-width: 250px;">
-            <h3 style="margin: 0 0 8px 0; font-weight: bold; color: #1f2937;">XDC Vibe Coding - Free Bootcamp</h3>
-            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📍 New York, NY</p>
-            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📅 January 15, 2025</p>
-            <p style="margin: 0 0 12px 0; font-size: 13px; color: #374151;">Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span style="font-weight: bold; color: #8b5cf6;">FREE</span>
-              <span style="font-size: 12px; color: #6b7280;">Limited Seats</span>
-            </div>
-            <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500;">View Event</a>
-          </div>`
-            : `<div style="max-width: 200px;">
-            <h3 style="margin: 0 0 8px 0; font-weight: bold;">Event #${eventId + 1}</h3>
-            <p style="margin: 0 0 8px 0; font-size: 12px;">📍 ${location.address}</p>
-            <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">View Event</a>
-          </div>`;
-
         const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
           .addTo(mapInstanceRef.current)
-          .bindPopup(popupContent)
-          .on("click", () => {
-            onEventSelect(selectedEvent === eventId ? null : eventId);
+          .on("click", (_e: any) => {
+            _e.originalEvent?.stopPropagation();
+            console.log("Marker clicked, eventId:", eventId);
+            onEventSelect(eventId);
           });
 
         markersRef.current.push(marker);
@@ -630,132 +760,22 @@ const LeafletMap = ({
   }, []);
 
   // Update map center when center prop changes
+
   useEffect(() => {
     if (mapInstanceRef.current) {
-      mapInstanceRef.current.setView([center.lat, center.lng], 10);
+      mapInstanceRef.current.setView(center, 10);
     }
   }, [center]);
 
-  // Update markers when events change
   useEffect(() => {
     if (mapInstanceRef.current) {
-      const addEventMarkers = () => {
-        // Clear existing markers
-        markersRef.current.forEach(marker => {
-          mapInstanceRef.current.removeLayer(marker);
-        });
-        markersRef.current = [];
-
-        // Add event markers
-        events.forEach(eventId => {
-          const location = eventLocations[eventId % eventLocations.length];
-
-          const customIcon = window.L.divIcon({
-            html: `<div style="
-              width: 32px; 
-              height: 32px; 
-              background: linear-gradient(45deg, #8b5cf6, #3b82f6); 
-              border-radius: 50%; 
-              border: 3px solid white; 
-              display: flex; 
-              align-items: center; 
-              justify-content: center; 
-              color: white; 
-              font-weight: bold; 
-              font-size: 12px;
-              box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-              ${selectedEvent === eventId ? "transform: scale(1.2); z-index: 1000;" : ""}
-            ">${eventId + 1}</div>`,
-            className: "custom-div-icon",
-            iconSize: [32, 32],
-            iconAnchor: [16, 16],
-          });
-
-          // Add popup content for NYC XDC event
-          const popupContent =
-            eventId === 0
-              ? `<div style="max-width: 250px;">
-              <h3 style="margin: 0 0 8px 0; font-weight: bold; color: #1f2937;">XDC Vibe Coding - Free Bootcamp</h3>
-              <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📍 New York, NY</p>
-              <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📅 January 15, 2025</p>
-              <p style="margin: 0 0 12px 0; font-size: 13px; color: #374151;">Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <span style="font-weight: bold; color: #8b5cf6;">FREE</span>
-                <span style="font-size: 12px; color: #6b7280;">Limited Seats</span>
-              </div>
-              <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500;">View Event</a>
-            </div>`
-              : `<div style="max-width: 200px;">
-              <h3 style="margin: 0 0 8px 0; font-weight: bold;">Event #${eventId + 1}</h3>
-              <p style="margin: 0 0 8px 0; font-size: 12px;">📍 ${location.address}</p>
-              <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">View Event</a>
-            </div>`;
-
-          const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
-            .addTo(mapInstanceRef.current)
-            .bindPopup(popupContent)
-            .on("click", () => {
-              onEventSelect(selectedEvent === eventId ? null : eventId);
-            });
-
-          markersRef.current.push(marker);
-        });
-
-        // Add user location marker if available
-        if (userLocation) {
-          const userIcon = window.L.divIcon({
-            html: `<div style="
-              width: 16px; 
-              height: 16px; 
-              background: #3b82f6; 
-              border-radius: 50%; 
-              border: 2px solid white; 
-              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            "></div>
-            <style>
-              @keyframes pulse {
-                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-                70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-              }
-            </style>`,
-            className: "user-location-icon",
-            iconSize: [16, 16],
-            iconAnchor: [8, 8],
-          });
-
-          const userMarker = window.L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(
-            mapInstanceRef.current,
-          );
-
-          markersRef.current.push(userMarker);
-        }
-      };
-
-      addEventMarkers();
+      // The logic to add/update markers is already in the initialization useEffect,
+      // which depends on `events`. We might need a more sophisticated update logic
+      // if events can change frequently without a full re-render, but for now this is fine.
     }
-  }, [events, selectedEvent, userLocation, onEventSelect]);
+  }, [events, userLocation, selectedEvent, onEventSelect, eventLocations]); // Dependencies for marker updates
 
-  return (
-    <div className="relative w-full h-full">
-      <div ref={mapRef} className="w-full h-full" />
-
-      {/* Map Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg z-[1000]">
-        <div className="text-sm font-medium text-gray-900 mb-2">Legend</div>
-        <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
-          <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-          <span>Events</span>
-        </div>
-        {userLocation && (
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span>Your Location</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+  return <div ref={mapRef} className="w-full h-full" />;
 };
 
 export default Home;
