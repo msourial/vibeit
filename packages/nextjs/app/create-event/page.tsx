@@ -50,7 +50,15 @@ const CreateEventPage: NextPage = () => {
 
     setIsLoading(true);
     try {
-      await createEvent({
+      console.log("Creating event with args:", {
+        name: name.trim(),
+        description: description.trim(),
+        date: BigInt(Math.floor(new Date(date).getTime() / 1000)),
+        ticketPrice: parseEther(ticketPrice),
+        totalTickets: BigInt(totalTickets),
+      });
+
+      const result = await createEvent({
         functionName: "createEvent",
         args: [
           name.trim(),
@@ -60,6 +68,8 @@ const CreateEventPage: NextPage = () => {
           BigInt(totalTickets),
         ],
       });
+
+      console.log("Event creation result:", result);
       
       // Reset form on success
       setName("");
@@ -70,9 +80,25 @@ const CreateEventPage: NextPage = () => {
       setTotalTickets("");
       
       alert("Event created successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating event:", error);
-      alert("Failed to create event. Please try again.");
+      
+      // Better error handling
+      let errorMessage = "Failed to create event. Please try again.";
+      
+      if (error?.message) {
+        if (error.message.includes("User rejected")) {
+          errorMessage = "Transaction was rejected by user.";
+        } else if (error.message.includes("insufficient funds")) {
+          errorMessage = "Insufficient funds to create event.";
+        } else if (error.message.includes("network")) {
+          errorMessage = "Network error. Please check your connection.";
+        } else {
+          errorMessage = `Error: ${error.message}`;
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
