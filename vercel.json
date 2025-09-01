@@ -1,20 +1,18 @@
 {
-  "buildCommand": "cd packages/nextjs && yarn build",
-  "outputDirectory": "packages/nextjs/.next",
-  "framework": "nextjs",
-  "installCommand": "yarn install",
-  "devCommand": "cd packages/nextjs && yarn dev",
-  "env": {
-    "NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID": "@wallet_connect_project_id"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID": "@wallet_connect_project_id"
+  "version": 2,
+  "builds": [
+    {
+      "src": "packages/nextjs/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
     }
-  },
-  "functions": {
-    "packages/nextjs/app/**": {
-      "runtime": "nodejs18.x"
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "packages/nextjs/$1"
     }
-  }
+  ]
 }

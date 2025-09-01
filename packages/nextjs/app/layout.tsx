@@ -1,17 +1,17 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
+import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthApp";
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
-  title: "vibeit - NFT Event Ticketing",
-  description: "Create events and mint NFT tickets with vibeit",
+  title: "VibeIt - NFT Event Ticketing",
+  description: "Decentralized event ticketing platform on XDC blockchain",
 });
 
-const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning className={``}>
+    <html suppressHydrationWarning>
       <body>
         <ThemeProvider enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
@@ -21,4 +21,4 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default ScaffoldEthApp;
+export default RootLayout;
