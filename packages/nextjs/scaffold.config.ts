@@ -1,5 +1,41 @@
 import * as chains from "viem/chains";
 
+// Define XDC mainnet chain
+const xdcMainnet = {
+  id: 50,
+  name: "XDC Network",
+  nativeCurrency: { name: "XDC", symbol: "XDC", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://erpc.xinfin.network"] },
+    public: { http: ["https://erpc.xinfin.network"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "XDC Explorer",
+      url: "https://explorer.xinfin.network",
+    },
+  },
+  testnet: false,
+} as const;
+
+// Define XDC testnet chain
+const xdcTestnet = {
+  id: 51,
+  name: "XDC Apothem Network",
+  nativeCurrency: { name: "XDC", symbol: "TXDC", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://erpc.apothem.network"] },
+    public: { http: ["https://erpc.apothem.network"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "XDC Explorer",
+      url: "https://explorer.apothem.network",
+    },
+  },
+  testnet: true,
+} as const;
+
 export type BaseConfig = {
   targetNetworks: readonly chains.Chain[];
   pollingInterval: number;
@@ -15,7 +51,7 @@ export const DEFAULT_ALCHEMY_API_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
-  targetNetworks: [chains.hardhat],
+  targetNetworks: [xdcTestnet],
   // The interval at which your front-end polls the RPC servers for new data (it has no effect if you only target the local network (default is 4000))
   pollingInterval: 30000,
   // This is ours Alchemy's default API key.
@@ -34,7 +70,7 @@ const scaffoldConfig = {
   // It's recommended to store it in an env variable:
   // .env.local for local testing, and in the Vercel/system env config for live apps.
   walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "3a8170812b534d0ff9d794f19a901d64",
-  onlyLocalBurnerWallet: true,
+  onlyLocalBurnerWallet: false,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

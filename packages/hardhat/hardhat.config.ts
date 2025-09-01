@@ -19,6 +19,9 @@ const providerApiKey = process.env.ALCHEMY_API_KEY || "oKxs-03sij-U_N0iOlrSsZFr2
 // You can generate a random account with `yarn generate` or `yarn account:import` to import your existing PK
 const deployerPrivateKey =
   process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
+// Test private key for XDC testnet (DO NOT use in production)
+const xdcTestPrivateKey = "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d";
 // If not set, it uses our block explorers default API keys.
 const etherscanApiKey = process.env.ETHERSCAN_V2_API_KEY || "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
 
@@ -124,6 +127,16 @@ const config: HardhatUserConfig = {
     celoAlfajores: {
       url: "https://alfajores-forno.celo-testnet.org",
       accounts: [deployerPrivateKey],
+    },
+    xdcTestnet: {
+      url: "https://erpc.apothem.network",
+      accounts: [xdcTestPrivateKey],
+      chainId: 51,
+    },
+    xdcMainnet: {
+      url: "https://erpc.xinfin.network",
+      accounts: [deployerPrivateKey],
+      chainId: 50,
     },
   },
   // Configuration for harhdat-verify plugin

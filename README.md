@@ -1,80 +1,322 @@
-# 🏗 Scaffold-ETH 2
+# 🎫 VibeIt - NFT Event Ticketing Platform
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+<div align="center">
+  <h3>🌟 Decentralized Event Ticketing on XDC Network 🌟</h3>
+  <p>Create events, sell NFT tickets, and explore events on an interactive map</p>
+</div>
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+---
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+## 🚀 Overview
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+**VibeIt** is a revolutionary NFT-based event ticketing platform built on the XDC blockchain. It combines the power of decentralized technology with an intuitive user experience, featuring an interactive map for event discovery, pixel art NFT tickets, and seamless blockchain integration.
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+### ✨ Key Features
 
-## Requirements
+- 🗺️ **Interactive Event Map** - Explore events on OpenStreetMap with Leaflet.js
+- 🎨 **Pixel Art NFT Tickets** - Unique, deterministic SVG avatars for each ticket
+- 🏗️ **Smart Contract Integration** - Built on XDC blockchain with Scaffold-ETH 2
+- 📍 **Location-Based Discovery** - Search events by city with quick location buttons
+- 💳 **Seamless Payments** - Pay with XDC cryptocurrency
+- 🎪 **Event Management** - Create and manage events with detailed information
+- 🔐 **Wallet Integration** - Connect with MetaMask and other Web3 wallets
 
-Before you begin, you need to install the following tools:
+---
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+## 🛠️ Tech Stack
 
-## Quickstart
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Modern styling with gradients and animations
+- **Leaflet.js** - Interactive maps with OpenStreetMap
+- **Wagmi & Viem** - Ethereum interactions
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### Blockchain
+- **XDC Network** - Fast, low-cost blockchain
+- **Solidity** - Smart contract development
+- **Hardhat** - Development environment
+- **OpenZeppelin** - Secure contract standards
 
-1. Install dependencies if it was skipped in CLI:
+### Smart Contracts
+- **EventManager.sol** - Event creation and ticket sales
+- **VibeTicket.sol** - ERC-721 NFT tickets
 
+---
+
+## 📋 Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18.18+)
+- [Yarn](https://yarnpkg.com/) (v1 or v2+)
+- [Git](https://git-scm.com/)
+- MetaMask or compatible Web3 wallet
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd vibeit
 ```
-cd my-dapp-example
+
+### 2. Install Dependencies
+```bash
 yarn install
 ```
 
-2. Run a local network in the first terminal:
-
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
+### 3. Start the Development Server
+```bash
+cd packages/nextjs
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+### 4. Access the Application
+- **Local**: http://localhost:3000
+- **Network**: Available on your local network
 
-Run smart contract test with `yarn hardhat:test`
+---
 
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
+## 🌐 Deployed Contracts (XDC Testnet)
 
+### Contract Addresses
+- **VibeTicket (NFT)**: `0x8e87ef2d07Aeac605050B972BFbFb8F5682c7351`
+- **EventManager**: `0xc70280C78faFA7613f3C8eAddCBF5c36501487bF`
 
-## Documentation
+### Network Details
+- **Network**: XDC Apothem Testnet
+- **Chain ID**: 51
+- **RPC URL**: https://erpc.apothem.network
+- **Explorer**: https://explorer.apothem.network
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+---
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+## 🎯 Core Features
 
-## Contributing to Scaffold-ETH 2
+### 🎪 Event Creation
+Create events with comprehensive details:
+- Event name and description
+- Date and time
+- Physical address/location
+- Ticket pricing in XDC
+- Total ticket supply
 
-We welcome contributions to Scaffold-ETH 2!
+### 🗺️ Interactive Map
+- **OpenStreetMap Integration** - Real street data and geographic features
+- **Event Pins** - Clickable markers showing event locations
+- **City Search** - Quick navigation to major cities
+- **User Location** - Shows your current position with pulsing animation
+- **Event Popups** - Detailed event information on pin click
 
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+### 🎨 NFT Tickets
+- **Unique Pixel Art** - Deterministic SVG avatars based on token ID
+- **ERC-721 Standard** - Full NFT ownership and transferability
+- **Metadata Storage** - Event details stored on-chain
+- **Transaction History** - Complete ownership and transfer records
+
+### 💼 Ticket Management
+- **My Tickets Page** - View all owned NFT tickets
+- **Detailed Modals** - Transaction IDs, contract addresses, mint dates
+- **Visual Avatars** - Beautiful pixel art representations
+- **Event Information** - Linked event details and metadata
+
+---
+
+## 🏗️ Project Structure
+
+```
+vibeit/
+├── packages/
+│   ├── hardhat/                 # Smart contracts & deployment
+│   │   ├── contracts/
+│   │   │   ├── EventManager.sol # Event management contract
+│   │   │   └── VibeTicket.sol   # NFT ticket contract
+│   │   ├── deploy/              # Deployment scripts
+│   │   └── deployments/         # Contract addresses & ABIs
+│   │
+│   └── nextjs/                  # Frontend application
+│       ├── app/
+│       │   ├── page.tsx         # Homepage with map
+│       │   ├── create-event/    # Event creation page
+│       │   └── my-tickets/      # Ticket management page
+│       ├── components/          # Reusable UI components
+│       └── hooks/               # Scaffold-ETH hooks
+│
+├── README.md
+└── package.json
+```
+
+---
+
+## 🔧 Development
+
+### Smart Contract Development
+```bash
+# Compile contracts
+cd packages/hardhat
+yarn compile
+
+# Run tests
+yarn test
+
+# Deploy to testnet
+yarn deploy --network xdcTestnet
+```
+
+### Frontend Development
+```bash
+# Start development server
+cd packages/nextjs
+yarn dev
+
+# Build for production
+yarn build
+
+# Start production server
+yarn start
+```
+
+### Environment Configuration
+Create `.env` files in respective packages:
+
+**packages/hardhat/.env**
+```env
+DEPLOYER_PRIVATE_KEY=your_private_key_here
+XDC_TESTNET_PRIVATE_KEY=your_testnet_key_here
+```
+
+**packages/nextjs/.env.local**
+```env
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
+```
+
+---
+
+## 🎨 UI/UX Design
+
+### Design Philosophy
+- **Modern & Clean** - Inspired by Luma's design language
+- **Gradient Aesthetics** - Purple to blue gradients throughout
+- **Smooth Animations** - Hover effects and transitions
+- **Responsive Design** - Works on all device sizes
+- **Accessibility** - High contrast and keyboard navigation
+
+### Color Palette
+- **Primary**: Purple (`#7C3AED`) to Blue (`#2563EB`)
+- **Background**: Light gradients (`purple-50` to `blue-50`)
+- **Text**: Dark gray (`#1F2937`) for readability
+- **Accents**: White cards with subtle shadows
+
+---
+
+## 🔐 Security Features
+
+- **OpenZeppelin Standards** - Battle-tested contract libraries
+- **Input Validation** - Comprehensive form and contract validation
+- **Access Controls** - Proper ownership and permission management
+- **Reentrancy Protection** - Secure payment handling
+- **Type Safety** - TypeScript throughout the application
+
+---
+
+## 🌍 Network Configuration
+
+### XDC Testnet Setup
+Add XDC Apothem Testnet to MetaMask:
+- **Network Name**: XDC Apothem Network
+- **RPC URL**: https://erpc.apothem.network
+- **Chain ID**: 51
+- **Currency Symbol**: TXDC
+- **Block Explorer**: https://explorer.apothem.network
+
+### Getting Test Tokens
+Visit the [XDC Faucet](https://faucet.apothem.network/) to get test TXDC tokens.
+
+---
+
+## 📱 Usage Guide
+
+### For Event Organizers
+1. **Connect Wallet** - Link your Web3 wallet
+2. **Create Event** - Fill out the event creation form
+3. **Set Pricing** - Define ticket price in XDC
+4. **Manage Sales** - Monitor ticket sales and revenue
+
+### For Event Attendees
+1. **Browse Events** - Explore the interactive map
+2. **Search Locations** - Use city buttons or search bar
+3. **Purchase Tickets** - Buy NFT tickets with XDC
+4. **Manage Collection** - View tickets in My Tickets page
+
+---
+
+## 🚀 Deployment
+
+### Smart Contracts
+Contracts are deployed on XDC Apothem Testnet. For mainnet deployment:
+
+```bash
+# Configure mainnet in scaffold.config.ts
+# Deploy to mainnet
+yarn deploy --network xdcMainnet
+```
+
+### Frontend Deployment
+Deploy to Vercel, Netlify, or any static hosting:
+
+```bash
+yarn build
+# Upload dist/ folder to hosting provider
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the Repository**
+2. **Create Feature Branch** - `git checkout -b feature/amazing-feature`
+3. **Commit Changes** - `git commit -m 'Add amazing feature'`
+4. **Push to Branch** - `git push origin feature/amazing-feature`
+5. **Open Pull Request**
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Use Tailwind CSS for styling
+- Write comprehensive tests
+- Document new features
+- Maintain code quality with ESLint
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Scaffold-ETH 2** - Development framework
+- **XDC Network** - Blockchain infrastructure
+- **OpenStreetMap** - Map data and tiles
+- **Leaflet.js** - Interactive mapping library
+- **OpenZeppelin** - Smart contract security standards
+
+---
+
+## 📞 Support
+
+For questions, issues, or contributions:
+- **GitHub Issues** - Report bugs and request features
+- **Documentation** - Check inline code comments
+- **Community** - Join XDC Network Discord
+
+---
+
+<div align="center">
+  <p>Built with ❤️ for the XDC Network ecosystem</p>
+  <p>🎫 <strong>VibeIt - Where Events Meet NFTs</strong> 🎫</p>
+</div>
