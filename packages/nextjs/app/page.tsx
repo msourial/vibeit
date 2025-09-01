@@ -328,9 +328,17 @@ const EventsMap = ({
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 }); // Default to NYC
 
-  // Mock event locations (same as in EventCard)
+  // Mock event locations with NYC XDC Vibe Coding event
   const mockEventLocations = [
-    { lat: 40.7128, lng: -74.0060, address: "New York, NY" },
+    { 
+      lat: 40.7128, 
+      lng: -74.0060, 
+      address: "New York, NY",
+      name: "XDC Vibe Coding - Free Bootcamp - Live Kick-off & AMA",
+      description: "Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.",
+      date: "2025-01-15",
+      price: "0.0"
+    },
     { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
     { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" },
     { lat: 29.7604, lng: -95.3698, address: "Houston, TX" },
@@ -423,11 +431,17 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
     args: [BigInt(eventId)],
   });
 
-  if (!event) return null;
-
-  const [name, description, date, ticketPrice, maxTickets, ticketsSold] = event;
+  // Mock event locations with detailed NYC XDC event
   const mockEventLocations = [
-    { lat: 40.7128, lng: -74.0060, address: "New York, NY" },
+    { 
+      lat: 40.7128, 
+      lng: -74.0060, 
+      address: "New York, NY",
+      name: "XDC Vibe Coding - Free Bootcamp - Live Kick-off & AMA",
+      description: "Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.",
+      date: "2025-01-15",
+      price: "0.0"
+    },
     { lat: 34.0522, lng: -118.2437, address: "Los Angeles, CA" },
     { lat: 41.8781, lng: -87.6298, address: "Chicago, IL" },
     { lat: 29.7604, lng: -95.3698, address: "Houston, TX" },
@@ -435,11 +449,19 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
   ];
   const location = mockEventLocations[eventId % mockEventLocations.length];
 
+  // Use mock data for first event (NYC XDC event), contract data for others
+  const displayName = eventId === 0 && location.name ? location.name : (event ? event[0] : "Loading...");
+  const displayDescription = eventId === 0 && location.description ? location.description : (event ? event[1] : "Loading...");
+  const displayDate = eventId === 0 && location.date ? location.date : (event ? new Date(Number(event[2]) * 1000).toLocaleDateString() : "");
+  const displayPrice = eventId === 0 && location.price ? location.price : (event ? (Number(event[3]) / 1e18).toString() : "0");
+
+  if (!event && eventId !== 0) return null;
+
   return (
     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
       <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm border border-gray-100">
         <div className="flex items-start justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900 pr-4">{name}</h3>
+          <h3 className="text-lg font-bold text-gray-900 pr-4">{displayName}</h3>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-xl"
@@ -454,17 +476,17 @@ const EventPopup = ({ eventId, onClose }: { eventId: number; onClose: () => void
           </div>
           
           <div className="flex items-center text-sm text-gray-600">
-            <span>📅 {new Date(Number(date) * 1000).toLocaleDateString()}</span>
+            <span>📅 {displayDate}</span>
           </div>
           
-          <p className="text-gray-700 text-sm line-clamp-2">{description}</p>
+          <p className="text-gray-700 text-sm line-clamp-2">{displayDescription}</p>
           
           <div className="flex items-center justify-between pt-2">
             <span className="text-xl font-bold text-purple-600">
-              {Number(ticketPrice) / 1e18} XDC
+              {displayPrice} XDC
             </span>
             <span className="text-sm text-gray-500">
-              {Math.min(Number(ticketsSold), 100000)}/{Math.min(Number(maxTickets), 100000)} sold
+              {event ? `${Math.min(Number(event[5]), 100000)}/${Math.min(Number(event[4]), 100000)} sold` : "Free Event"}
             </span>
           </div>
           
@@ -553,7 +575,6 @@ const LeafletMap = ({
       events.forEach(eventId => {
         const location = mockEventLocations[eventId % mockEventLocations.length];
         
-        // Create custom icon
         const customIcon = window.L.divIcon({
           html: `<div style="
             width: 32px; 
@@ -574,8 +595,27 @@ const LeafletMap = ({
           iconAnchor: [16, 16]
         });
 
+        const popupContent = eventId === 0 ? 
+          `<div style="max-width: 250px;">
+            <h3 style="margin: 0 0 8px 0; font-weight: bold; color: #1f2937;">XDC Vibe Coding - Free Bootcamp</h3>
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📍 New York, NY</p>
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📅 January 15, 2025</p>
+            <p style="margin: 0 0 12px 0; font-size: 13px; color: #374151;">Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-weight: bold; color: #8b5cf6;">FREE</span>
+              <span style="font-size: 12px; color: #6b7280;">Limited Seats</span>
+            </div>
+            <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500;">View Event</a>
+          </div>` :
+          `<div style="max-width: 200px;">
+            <h3 style="margin: 0 0 8px 0; font-weight: bold;">Event #${eventId + 1}</h3>
+            <p style="margin: 0 0 8px 0; font-size: 12px;">📍 ${location.address}</p>
+            <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">View Event</a>
+          </div>`;
+
         const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
           .addTo(mapInstanceRef.current)
+          .bindPopup(popupContent)
           .on('click', () => {
             onEventSelect(selectedEvent === eventId ? null : eventId);
           });
@@ -659,8 +699,28 @@ const LeafletMap = ({
             iconAnchor: [16, 16]
           });
 
+          // Add popup content for NYC XDC event
+          const popupContent = eventId === 0 ? 
+            `<div style="max-width: 250px;">
+              <h3 style="margin: 0 0 8px 0; font-weight: bold; color: #1f2937;">XDC Vibe Coding - Free Bootcamp</h3>
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📍 New York, NY</p>
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #6b7280;">📅 January 15, 2025</p>
+              <p style="margin: 0 0 12px 0; font-size: 13px; color: #374151;">Join us for an exciting developer bootcamp featuring XDC blockchain development, live coding sessions, and exclusive AMA with industry experts.</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-weight: bold; color: #8b5cf6;">FREE</span>
+                <span style="font-size: 12px; color: #6b7280;">Limited Seats</span>
+              </div>
+              <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 500;">View Event</a>
+            </div>` :
+            `<div style="max-width: 200px;">
+              <h3 style="margin: 0 0 8px 0; font-weight: bold;">Event #${eventId + 1}</h3>
+              <p style="margin: 0 0 8px 0; font-size: 12px;">📍 ${location.address}</p>
+              <a href="/event/${eventId}" style="display: block; text-align: center; background: linear-gradient(45deg, #8b5cf6, #3b82f6); color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">View Event</a>
+            </div>`;
+
           const marker = window.L.marker([location.lat, location.lng], { icon: customIcon })
             .addTo(mapInstanceRef.current)
+            .bindPopup(popupContent)
             .on('click', () => {
               onEventSelect(selectedEvent === eventId ? null : eventId);
             });
